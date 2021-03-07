@@ -52,7 +52,7 @@ class App extends Component {
       currentList: {items: []},
       nextListId: highListId+1,
       nextListItemId: highListItemId+1,
-      useVerboseFeedback: true
+      useVerboseFeedback: true,
     }
   }
 
@@ -68,7 +68,9 @@ class App extends Component {
 
     this.setState({
       toDoLists: nextLists,
-      currentList: toDoList
+      currentList: toDoList,
+      topBackgroundColor:"#ffc800",
+      topColor:"black"
     });
   }
 
@@ -81,7 +83,8 @@ class App extends Component {
     this.setState({
       toDoLists: newToDoListsList,
       currentList: newToDoList,
-      nextListId: this.state.nextListId+1
+      nextListId: this.state.nextListId+1,
+      
     }, this.afterToDoListsChangeComplete);
   }
 
@@ -102,6 +105,7 @@ class App extends Component {
     };
     return newToDoListItem;
   }
+  
 
   // THIS IS A CALLBACK FUNCTION FOR AFTER AN EDIT TO A LIST
   afterToDoListsChangeComplete = () => {
@@ -121,6 +125,9 @@ class App extends Component {
           toDoLists={this.state.toDoLists}
           loadToDoListCallback={this.loadToDoList}
           addNewListCallback={this.addNewList}
+          topBackgroundColor={this.state.topBackgroundColor}
+          topColor={this.state.topColor}
+          
         />
         <Workspace toDoListItems={items} />
       </div>

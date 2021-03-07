@@ -23,9 +23,10 @@ class ListLink extends Component {
         console.log("\t\t\tListLink render");
 
         return (
-            <div 
+            <div
                 className='todo-list-button'
                 onClick={this.handleLoadList}
+                style={{backgroundColor:this.props.backgroundColor, color:this.props.color}}
             >
                 {this.props.toDoList.name}<br />
             </div>
