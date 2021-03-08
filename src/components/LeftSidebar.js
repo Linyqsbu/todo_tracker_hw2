@@ -7,11 +7,6 @@ import Redo from '@material-ui/icons/Redo';
 class LeftSidebar extends Component {
     constructor(props) {
         super(props);
-
-        this.state={
-            topBackgroundColor:"",
-            topColor:""
-        }
     }
 
     handleAddNewList = () => {
@@ -37,6 +32,7 @@ class LeftSidebar extends Component {
                             key={toDoList.id}
                             toDoList={toDoList}                                // PASS THE LIST TO THE CHILDREN
                             loadToDoListCallback={this.props.loadToDoListCallback}// PASS THE CALLBACK TO THE CHILDREN
+                            editListNameCallback={this.props.editListNameCallback}
                             backgroundColor={this.props.toDoLists.indexOf(toDoList)==0? this.props.topBackgroundColor:null}
                             color={this.props.toDoLists.indexOf(toDoList)==0? this.props.topColor:null}
                             

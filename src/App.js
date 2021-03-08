@@ -74,6 +74,13 @@ class App extends Component {
     });
   }
 
+  editListName = (newName) => {
+    this.state.currentList.name=newName;
+    this.setState({
+      currentList:this.state.currentList
+    })
+  }
+
   addNewList = () => {
     let newToDoListInList = [this.makeNewToDoList()];
     let newToDoListsList = [...newToDoListInList, ...this.state.toDoLists];
@@ -105,6 +112,27 @@ class App extends Component {
     };
     return newToDoListItem;
   }
+
+  editItemName = (item, newName) => {
+    item.description=newName;
+    this.setState({
+      currentList:this.state.currentList
+    })
+  }
+
+  editItemDueDate = (item, newDueDate) => {
+    item.due_date=newDueDate;
+    this.setState({
+      currentList:this.state.currentList
+    })
+  }
+
+  editStatus = (item, newStatus) => {
+    item.status=newStatus;
+    this.setState({
+      currentList:this.state.currentList
+    })
+  }
   
 
   // THIS IS A CALLBACK FUNCTION FOR AFTER AN EDIT TO A LIST
@@ -125,11 +153,17 @@ class App extends Component {
           toDoLists={this.state.toDoLists}
           loadToDoListCallback={this.loadToDoList}
           addNewListCallback={this.addNewList}
+          editListNameCallback={this.editListName}
           topBackgroundColor={this.state.topBackgroundColor}
           topColor={this.state.topColor}
           
         />
-        <Workspace toDoListItems={items} />
+        <Workspace 
+          toDoListItems={items} 
+          editItemNameCallback={this.editItemName}
+          editDueDateCallback={this.editItemDueDate}
+          editStatusCallback={this.editStatus}
+        />
       </div>
     );
   }

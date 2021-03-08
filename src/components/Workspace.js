@@ -12,6 +12,8 @@ class Workspace extends Component {
         super(props);
     }
 
+    
+
     render() {
         return (
             <div id="workspace">
@@ -31,6 +33,9 @@ class Workspace extends Component {
                         <ToDoItem
                             key={toDoListItem.id}
                             toDoListItem={toDoListItem}     // PASS THE ITEM TO THE CHILDREN
+                            editItemNameCallback={this.props.editItemNameCallback}
+                            editDueDateCallback={this.props.editDueDateCallback}
+                            editStatusCallback={this.props.editStatusCallback}
                         />))
                     }
                 </div>

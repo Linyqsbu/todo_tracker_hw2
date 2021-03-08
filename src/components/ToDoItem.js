@@ -8,8 +8,40 @@ class ToDoItem extends Component {
     constructor(props) {
         super(props);
         
+        this.state={
+            taskEditable:false,
+            dueDateEditable:false,
+            statusEditable:false
+        }
         // DISPLAY WHERE WE ARE
         console.log("\t\t\tToDoItem " + this.props.toDoListItem.id + " constructor");
+    }
+
+    editTaskName = () => {
+        this.setState({
+            taskEditable:true
+        })
+    }
+
+    submitTaskName = (event) => {
+        this.props.editItemNameCallback(this.props.toDoListItem, event.target.value);
+        this.setState({
+            taskEditable:false
+        })
+    }
+
+    submitDueDate = (event) => {
+        this.props.editDueDateCallback(this.props.toDoListItem, event.target.value);
+        this.setState({
+            dueDateEditable:false
+        })
+    }
+
+    submitStatus = (event) => {
+        this.props.editStatusCallback(this.props.toDoListItem, event.target.value)
+        this.setState({
+            statusEditable:false
+        })
     }
 
     componentDidMount = () => {
@@ -27,9 +59,54 @@ class ToDoItem extends Component {
 
         return (
             <div id={'todo-list-item-' + listItem.id} className='list-item-card'>
-                <div className='item-col task-col'>{listItem.description}</div>
-                <div className='item-col due-date-col'>{listItem.due_date}</div>
-                <div className='item-col status-col' className={statusType}>{listItem.status}</div>
+
+                {!this.state.taskEditable?
+                    <div className='item-col task-col' onClick={this.editTaskName}>
+                        {listItem.description}
+                    </div>:
+                    <input 
+                        type="text" 
+                        defaultValue={listItem.description} 
+                        onBlur={(e) => this.submitTaskName(e)}
+                        autoFocus
+                    >
+                    </input>
+                }
+
+                {!this.state.dueDateEditable?
+                    <div 
+                        className='item-col due-date-col'
+                        onClick={() => {this.setState({dueDateEditable:true})}}
+                    >
+                        {listItem.due_date}
+                    </div>:
+                    <input 
+                        type="date"
+                        defaultValue={listItem.due_date}
+                        onBlur={(e) => this.submitDueDate(e)}
+                        autoFocus
+                    >
+                    </input>
+                }
+
+                {!this.state.statusEditable?
+                    <div 
+                        className='item-col status-col' 
+                        className={statusType}
+                        onClick={() => {this.setState({statusEditable:true})}}
+                    >
+                        {listItem.status}
+                    </div>:
+                    <select
+                        defaultValue={listItem.status}
+                        onBlur={(e) => this.submitStatus(e)}
+                        autoFocus
+                    >
+                        <option value="complete">complete</option>
+                        <option value="incomplete">incomplete</option>
+                    </select>
+                }
+
                 <div className='item-col test-4-col'></div>
                 <div className='item-col list-controls-col'>
                     <KeyboardArrowUp className='list-item-control todo-button' />
