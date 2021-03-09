@@ -7,6 +7,7 @@ import jsTPS from './common/jsTPS'
 import Navbar from './components/Navbar'
 import LeftSidebar from './components/LeftSidebar'
 import Workspace from './components/Workspace'
+import AddNewItemTransaction from './transactions/AddNewItemTransaction';
 {/*import ItemsListHeaderComponent from './components/ItemsListHeaderComponent'
 import ItemsListComponent from './components/ItemsListComponent'
 import ListsComponent from './components/ListsComponent'
@@ -23,11 +24,11 @@ class App extends Component {
     this.tps = new jsTPS();
 
     // CHECK TO SEE IF THERE IS DATA IN LOCAL STORAGE FOR THIS APP
-    let recentLists = localStorage.getItem("recent");
+    let recentLists = localStorage.getItem("recentList");
     console.log("recentLists: " + recentLists);
     if (!recentLists) {
       recentLists = JSON.stringify(testData.toDoLists);
-      //localStorage.setItem("toDoLists", recentLists);
+      localStorage.setItem("toDoLists", recentLists);
     }
     recentLists = JSON.parse(recentLists);
     
@@ -59,7 +60,6 @@ class App extends Component {
   // WILL LOAD THE SELECTED LIST
   loadToDoList = (toDoList) => {
     console.log("loading " + toDoList);
-
     // MAKE SURE toDoList IS AT THE TOP OF THE STACK BY REMOVING THEN PREPENDING
     const nextLists = this.state.toDoLists.filter(testList =>
       testList.id !== toDoList.id
@@ -71,14 +71,14 @@ class App extends Component {
       currentList: toDoList,
       topBackgroundColor:"#ffc800",
       topColor:"black"
-    });
+    },this.afterToDoListsChangeComplete);
   }
 
   editListName = (newName) => {
     this.state.currentList.name=newName;
     this.setState({
       currentList:this.state.currentList
-    })
+    }, this.afterToDoListsChangeComplete)
   }
 
   addNewList = () => {
@@ -95,6 +95,45 @@ class App extends Component {
     }, this.afterToDoListsChangeComplete);
   }
 
+  addItemTransaction = () => {
+    let transaction=new AddNewItemTransaction(this);
+    this.tps.addTransaction(transaction);
+  }
+
+  addItem = () => {
+    let newItem=[this.makeNewToDoListItem()]
+    let newItemSet=[...this.state.currentList.items,...newItem];
+    let newList={
+      id:this.state.currentList.id,
+      name:this.state.currentList.name,
+      items:newItemSet
+    }
+    let newLists=this.state.toDoLists.slice(1);
+    newLists.unshift(newList);
+    this.setState({
+      toDoLists:newLists,
+      currentList:newList,
+      nextListItemId:this.state.nextListItemId+1
+    },this.afterToDoListsChangeComplete);
+    return newItem[0];
+  }
+
+  deleteList = () => {
+    let newLists=this.state.toDoLists.slice(1);
+    this.closeList();
+    this.setState({
+      toDoLists:newLists
+    },this.afterToDoListsChangeComplete)
+  }
+
+  closeList = () => {
+    this.setState({
+      currentList:{items:[]},
+      topBackgroundColor:"",
+      topColor:""
+    })
+  }
+
   makeNewToDoList = () => {
     let newToDoList = {
       id: this.state.nextListId,
@@ -106,8 +145,9 @@ class App extends Component {
 
   makeNewToDoListItem = () =>  {
     let newToDoListItem = {
+      id:this.state.nextListItemId,
       description: "No Description",
-      dueDate: "none",
+      due_date: "none",
       status: "incomplete"
     };
     return newToDoListItem;
@@ -117,21 +157,21 @@ class App extends Component {
     item.description=newName;
     this.setState({
       currentList:this.state.currentList
-    })
+    },this.afterToDoListsChangeComplete)
   }
 
   editItemDueDate = (item, newDueDate) => {
     item.due_date=newDueDate;
     this.setState({
       currentList:this.state.currentList
-    })
+    }, this.afterToDoListsChangeComplete)
   }
 
   editStatus = (item, newStatus) => {
     item.status=newStatus;
     this.setState({
       currentList:this.state.currentList
-    })
+    }, this.afterToDoListsChangeComplete)
   }
 
   moveItemUp = (item) => {
@@ -142,7 +182,7 @@ class App extends Component {
       let newList={items:nextItems};
       this.setState({
         currentList:newList
-      })
+      }, this.afterToDoListsChangeComplete)
     }
   }
 
@@ -154,7 +194,7 @@ class App extends Component {
       let newList={items:prevItems};
       this.setState({
         currentList:newList
-      })
+      }, this.afterToDoListsChangeComplete);
     }
   }
 
@@ -170,10 +210,22 @@ class App extends Component {
     this.setState({
       currentList:newList,
       toDoLists:newLists
-    })
+    }, this.afterToDoListsChangeComplete);
+  }
+
+  redo = () => {
+    if(this.tps.hasTransactionToRedo()){
+      this.tps.doTransaction();
+    }
+  }
+
+  undo = () => {
+    if(this.tps.hasTransactionToUndo()){
+      this.tps.undoTransaction();
+    }
   }
   
-
+  
   // THIS IS A CALLBACK FUNCTION FOR AFTER AN EDIT TO A LIST
   afterToDoListsChangeComplete = () => {
     console.log("App updated currentToDoList: " + this.state.currentList);
@@ -193,6 +245,8 @@ class App extends Component {
           loadToDoListCallback={this.loadToDoList}
           addNewListCallback={this.addNewList}
           editListNameCallback={this.editListName}
+          redoCallback={this.redo}
+          undoCallback={this.undo}
           topBackgroundColor={this.state.topBackgroundColor}
           topColor={this.state.topColor}
           
@@ -205,6 +259,9 @@ class App extends Component {
           moveItemUpCallback={this.moveItemUp}
           moveItemDownCallback={this.moveItemDown}
           deleteItemCallback={this.deleteItem}
+          addItemCallback={this.addItemTransaction}
+          deleteListCallback={this.deleteList}
+          closeListCallback={this.closeList}
         />
       </div>
     );
