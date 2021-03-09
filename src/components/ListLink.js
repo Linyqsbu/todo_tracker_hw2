@@ -19,10 +19,7 @@ class ListLink extends Component {
     }
 
     handleLoadList = () => {
-        this.props.loadToDoListCallback(this.props.toDoList);
-        this.setState({
-            editable:false
-        })
+        setTimeout(()=> {this.props.loadToDoListCallback(this.props.toDoList);}, 100);
     }
 
     submitNameChange = (event) => {
@@ -33,9 +30,11 @@ class ListLink extends Component {
     }
 
     handleNameChange = () => {
-        this.setState({
-            editable:true
-        });
+        if(this.props.editListNameCallback){
+            this.setState({
+                editable:true
+            });
+        }
     }
 
     editName = (event) => {
@@ -43,9 +42,6 @@ class ListLink extends Component {
             value:event.target.value,
         })
     }
-
-    
-    
 
     render() {
         // DISPLAY WHERE WE ARE

@@ -23,14 +23,14 @@ class App extends Component {
     this.tps = new jsTPS();
 
     // CHECK TO SEE IF THERE IS DATA IN LOCAL STORAGE FOR THIS APP
-    let recentLists = localStorage.getItem("recentLists");
+    let recentLists = localStorage.getItem("recent");
     console.log("recentLists: " + recentLists);
     if (!recentLists) {
       recentLists = JSON.stringify(testData.toDoLists);
-      localStorage.setItem("toDoLists", recentLists);
+      //localStorage.setItem("toDoLists", recentLists);
     }
     recentLists = JSON.parse(recentLists);
-
+    
     // FIND OUT WHAT THE HIGHEST ID NUMBERS ARE FOR LISTS
     let highListId = -1;
     let highListItemId = -1;
@@ -97,7 +97,7 @@ class App extends Component {
 
   makeNewToDoList = () => {
     let newToDoList = {
-      id: this.highListId,
+      id: this.state.nextListId,
       name: 'Untitled',
       items: []
     };
@@ -133,6 +133,45 @@ class App extends Component {
       currentList:this.state.currentList
     })
   }
+
+  moveItemUp = (item) => {
+    let index=this.state.currentList.items.indexOf(item);
+    if(index>0){
+      const nextItems=this.state.currentList.items.filter(testItem => testItem.id!=item.id);
+      nextItems.splice(index-1,0,item);
+      let newList={items:nextItems};
+      this.setState({
+        currentList:newList
+      })
+    }
+  }
+
+  moveItemDown = (item) => {
+    let index=this.state.currentList.items.indexOf(item);
+    if(index<this.state.currentList.items.length-1){
+      const prevItems=this.state.currentList.items.filter(testItem => testItem.id!=item.id);
+      prevItems.splice(index+1,0,item);
+      let newList={items:prevItems};
+      this.setState({
+        currentList:newList
+      })
+    }
+  }
+
+  deleteItem = (item) => {
+    let newLists=this.state.toDoLists.filter(testList => testList.id!=this.state.currentList.id);
+    let newItems=this.state.currentList.items.filter(testItem => testItem.id!=item.id);
+    let newList={
+      id:this.state.currentList.id,
+      name:this.state.currentList.name,
+      items:newItems
+    }
+    newLists.unshift(newList);
+    this.setState({
+      currentList:newList,
+      toDoLists:newLists
+    })
+  }
   
 
   // THIS IS A CALLBACK FUNCTION FOR AFTER AN EDIT TO A LIST
@@ -141,7 +180,7 @@ class App extends Component {
 
     // WILL THIS WORK? @todo
     let toDoListsString = JSON.stringify(this.state.toDoLists);
-    localStorage.setItem("recent_work", toDoListsString);
+    localStorage.setItem("recentLists", toDoListsString);
   }
 
   render() {
@@ -163,6 +202,9 @@ class App extends Component {
           editItemNameCallback={this.editItemName}
           editDueDateCallback={this.editItemDueDate}
           editStatusCallback={this.editStatus}
+          moveItemUpCallback={this.moveItemUp}
+          moveItemDownCallback={this.moveItemDown}
+          deleteItemCallback={this.deleteItem}
         />
       </div>
     );

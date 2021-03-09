@@ -32,7 +32,7 @@ class LeftSidebar extends Component {
                             key={toDoList.id}
                             toDoList={toDoList}                                // PASS THE LIST TO THE CHILDREN
                             loadToDoListCallback={this.props.loadToDoListCallback}// PASS THE CALLBACK TO THE CHILDREN
-                            editListNameCallback={this.props.editListNameCallback}
+                            editListNameCallback={this.props.toDoLists.indexOf(toDoList)==0?this.props.editListNameCallback:null}
                             backgroundColor={this.props.toDoLists.indexOf(toDoList)==0? this.props.topBackgroundColor:null}
                             color={this.props.toDoLists.indexOf(toDoList)==0? this.props.topColor:null}
                             

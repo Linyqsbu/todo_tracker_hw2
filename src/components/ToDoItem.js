@@ -49,6 +49,18 @@ class ToDoItem extends Component {
         console.log("\t\t\tToDoItem " + this.props.toDoListItem.id + " did mount");
     }
 
+    handleMoveItemUp = () => {
+        this.props.moveItemUpCallback(this.props.toDoListItem);
+    }
+
+    handleMoveItemDown = () => {
+        this.props.moveItemDownCallback(this.props.toDoListItem);
+    }
+
+    handleDeleteItem =() => {
+        this.props.deleteItemCallback(this.props.toDoListItem);
+    }
+
     render() {
         // DISPLAY WHERE WE ARE
         console.log("\t\t\tToDoItem render");
@@ -109,9 +121,18 @@ class ToDoItem extends Component {
 
                 <div className='item-col test-4-col'></div>
                 <div className='item-col list-controls-col'>
-                    <KeyboardArrowUp className='list-item-control todo-button' />
-                    <KeyboardArrowDown className='list-item-control todo-button' />
-                    <Close className='list-item-control todo-button' />
+                    <KeyboardArrowUp 
+                        className='list-item-control todo-button' 
+                        onClick={this.handleMoveItemUp}
+                    />
+                    <KeyboardArrowDown 
+                        className='list-item-control todo-button' 
+                        onClick={this.handleMoveItemDown}
+                    />
+                    <Close 
+                        className='list-item-control todo-button' 
+                        onClick={this.handleDeleteItem}
+                    />
                     <div className='list-item-control'></div>
         <div className='list-item-control'></div>
                 </div>
