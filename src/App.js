@@ -7,7 +7,13 @@ import jsTPS from './common/jsTPS'
 import Navbar from './components/Navbar'
 import LeftSidebar from './components/LeftSidebar'
 import Workspace from './components/Workspace'
-import AddNewItemTransaction from './transactions/AddNewItemTransaction';
+import AddNewItem_Transaction from './transactions/AddNewItem_Transaction'
+import DeleteItem_Transaction from './transactions/DeleteItem_Transaction'
+import DueDateEdit_Transaction from './transactions/DueDateEdit_Transaction';
+import TaskEdit_Transaction from './transactions/TaskEdit_Transaction';
+import MovingItemDown_Transaction from './transactions/MovingItemDown_Transaction'
+import MovingItemUp_Transaction from './transactions/MovingItemUp_Transaction';
+import StatusEdit_Transaction from './transactions/StatusEdit_Transaction';
 {/*import ItemsListHeaderComponent from './components/ItemsListHeaderComponent'
 import ItemsListComponent from './components/ItemsListComponent'
 import ListsComponent from './components/ListsComponent'
@@ -96,7 +102,7 @@ class App extends Component {
   }
 
   addItemTransaction = () => {
-    let transaction=new AddNewItemTransaction(this);
+    let transaction=new AddNewItem_Transaction(this);
     this.tps.addTransaction(transaction);
   }
 
@@ -153,20 +159,34 @@ class App extends Component {
     return newToDoListItem;
   }
 
+  editItemNameTransaction = (oldName, newName, item) => {
+    let transaction = new TaskEdit_Transaction(this, oldName, newName, item);
+    this.tps.addTransaction(transaction);
+  }
   editItemName = (item, newName) => {
     item.description=newName;
     this.setState({
       currentList:this.state.currentList
-    },this.afterToDoListsChangeComplete)
+    },this.afterToDoListsChangeComplete);
+  }
+
+  editItemDueDateTransaction = (oldDate, newDate, item) => {
+    let transaction = new DueDateEdit_Transaction(this, oldDate, newDate, item);
+    this.tps.addTransaction(transaction);
   }
 
   editItemDueDate = (item, newDueDate) => {
+    console.log(item);
     item.due_date=newDueDate;
     this.setState({
       currentList:this.state.currentList
     }, this.afterToDoListsChangeComplete)
   }
-
+  
+  editStatusTransaction = (oldStatus, newStatus, item) => {
+    let transaction = new StatusEdit_Transaction(this, oldStatus, newStatus, item);
+    this.tps.addTransaction(transaction);
+  }
   editStatus = (item, newStatus) => {
     item.status=newStatus;
     this.setState({
@@ -174,16 +194,32 @@ class App extends Component {
     }, this.afterToDoListsChangeComplete)
   }
 
+  moveItemUpTransaction = (item) => {
+    let transaction = new MovingItemUp_Transaction(this, item);
+    this.tps.addTransaction(transaction);
+  }
+
   moveItemUp = (item) => {
     let index=this.state.currentList.items.indexOf(item);
     if(index>0){
       const nextItems=this.state.currentList.items.filter(testItem => testItem.id!=item.id);
       nextItems.splice(index-1,0,item);
-      let newList={items:nextItems};
+      let newList={
+        id:this.state.currentList.id,
+        name:this.state.currentList.name,
+        items:nextItems};
+      let newLists=this.state.toDoLists.slice(1);
+      newLists.unshift(newList);
       this.setState({
-        currentList:newList
+        currentList:newList,
+        toDoLists:newLists
       }, this.afterToDoListsChangeComplete)
     }
+  }
+
+  moveItemDownTransaction = (item) => {
+    let transaction = new MovingItemDown_Transaction(this, item);
+    this.tps.addTransaction(transaction);
   }
 
   moveItemDown = (item) => {
@@ -191,15 +227,27 @@ class App extends Component {
     if(index<this.state.currentList.items.length-1){
       const prevItems=this.state.currentList.items.filter(testItem => testItem.id!=item.id);
       prevItems.splice(index+1,0,item);
-      let newList={items:prevItems};
+      let newList={
+        id:this.state.currentList.id,
+        name:this.state.currentList.name,
+        items:prevItems
+      };
+      let newLists=this.state.toDoLists.slice(1);
+      newLists.unshift(newList);
       this.setState({
-        currentList:newList
+        currentList:newList,
+        toDoLists:newLists
       }, this.afterToDoListsChangeComplete);
     }
   }
 
+  deleteItemTransaction = (item) => {
+    let transaction = new DeleteItem_Transaction(this, item, this.state.currentList.items.indexOf(item));
+    this.tps.addTransaction(transaction);
+  }
+
   deleteItem = (item) => {
-    let newLists=this.state.toDoLists.filter(testList => testList.id!=this.state.currentList.id);
+    let newLists=this.state.toDoLists.slice(1);
     let newItems=this.state.currentList.items.filter(testItem => testItem.id!=item.id);
     let newList={
       id:this.state.currentList.id,
@@ -210,6 +258,26 @@ class App extends Component {
     this.setState({
       currentList:newList,
       toDoLists:newLists
+    }, this.afterToDoListsChangeComplete);
+  }
+
+  /**
+   * Adds a initialized item to the current list at a specific index
+   */
+  addItemToCurrentList = (item, index) => {
+    let newItems=[...this.state.currentList.items];
+    newItems.splice(index,0,item);
+    let newList={
+      id:this.state.currentList.id,
+      name:this.state.currentList.name,
+      items:newItems
+    }
+
+    let newLists=this.state.toDoLists.slice(1);
+    newLists.unshift(newList);
+    this.setState({
+      toDoList:newLists,
+      currentList:newList
     }, this.afterToDoListsChangeComplete);
   }
 
@@ -253,12 +321,12 @@ class App extends Component {
         />
         <Workspace 
           toDoListItems={items} 
-          editItemNameCallback={this.editItemName}
-          editDueDateCallback={this.editItemDueDate}
-          editStatusCallback={this.editStatus}
-          moveItemUpCallback={this.moveItemUp}
-          moveItemDownCallback={this.moveItemDown}
-          deleteItemCallback={this.deleteItem}
+          editItemNameCallback={this.editItemNameTransaction}
+          editDueDateCallback={this.editItemDueDateTransaction}
+          editStatusCallback={this.editStatusTransaction}
+          moveItemUpCallback={this.moveItemUpTransaction}
+          moveItemDownCallback={this.moveItemDownTransaction}
+          deleteItemCallback={this.deleteItemTransaction}
           addItemCallback={this.addItemTransaction}
           deleteListCallback={this.deleteList}
           closeListCallback={this.closeList}

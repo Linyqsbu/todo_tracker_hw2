@@ -24,21 +24,21 @@ class ToDoItem extends Component {
     }
 
     submitTaskName = (event) => {
-        this.props.editItemNameCallback(this.props.toDoListItem, event.target.value);
+        this.props.editItemNameCallback(this.props.toDoListItem.description, event.target.value, this.props.toDoListItem);
         this.setState({
             taskEditable:false
         })
     }
 
     submitDueDate = (event) => {
-        this.props.editDueDateCallback(this.props.toDoListItem, event.target.value);
+        this.props.editDueDateCallback(this.props.toDoListItem.due_date, event.target.value,this.props.toDoListItem );
         this.setState({
             dueDateEditable:false
         })
     }
 
     submitStatus = (event) => {
-        this.props.editStatusCallback(this.props.toDoListItem, event.target.value)
+        this.props.editStatusCallback(this.props.toDoListItem.status, event.target.value, this.props.toDoListItem);
         this.setState({
             statusEditable:false
         })
