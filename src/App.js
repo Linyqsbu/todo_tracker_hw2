@@ -99,6 +99,8 @@ class App extends Component {
         toDoLists: newToDoListsList,
         currentList: newToDoList,
         nextListId: this.state.nextListId+1,
+        topBackgroundColor:"#ffc800",
+        topColor:"black"
         
       }, this.afterToDoListsChangeComplete);
     }

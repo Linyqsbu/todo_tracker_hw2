@@ -66,6 +66,13 @@
     width: 90%;
 }
 
+#todo-lists-list input{
+    margin-top:20px;
+    height: 33px;
+    
+    text-align:center;
+}
+
 .todo-button {
     white-space: nowrap;
 }
@@ -161,29 +168,6 @@ button:hover {
 .task-col{
     margin-left:5px;
 }
-
-/*
-.due-date-col{
-    position:absolute;
-    left:25%;
-}
-
-.status-complete{
-    position:absolute;
-    left:50%;
-}
-
-.status-incomplete{
-    position:absolute;
-    left: 50%;
-}
-
-.list-controls-col{
-    position:absolute;
-    right:0;
-    height:100%;
-}
-*/
 
 #add-item-button{
     height:100%;
