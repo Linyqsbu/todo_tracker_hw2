@@ -59,6 +59,7 @@ class App extends Component {
       currentList: {items: []},
       nextListId: highListId+1,
       nextListItemId: highListItemId+1,
+      isModalOpen:false,
       useVerboseFeedback: true,
     }
   }
@@ -124,15 +125,25 @@ class App extends Component {
     return newItem[0];
   }
 
+  showDeleteModal = () => {
+    if(this.state.toDoLists.includes(this.state.currentList)){
+      this.setState({
+        isModalOpen:true
+      });
+    }
+  }
+
   deleteList = () => {
     let newLists=this.state.toDoLists.slice(1);
     this.closeList();
     this.setState({
-      toDoLists:newLists
+      toDoLists:newLists,
+      isModalOpen:false
     },this.afterToDoListsChangeComplete)
   }
 
   closeList = () => {
+    this.tps.clearAllTransactions();
     this.setState({
       currentList:{items:[]},
       topBackgroundColor:"",
@@ -328,9 +339,33 @@ class App extends Component {
           moveItemDownCallback={this.moveItemDownTransaction}
           deleteItemCallback={this.deleteItemTransaction}
           addItemCallback={this.addItemTransaction}
-          deleteListCallback={this.deleteList}
+          deleteListCallback={this.showDeleteModal}
           closeListCallback={this.closeList}
         />
+        {this.state.isModalOpen?
+          (
+            <div className='modal'>
+              <div className='modal-container'>
+                  <h1>Delete List</h1>
+                  <p>Are you sure you want to delete this list?</p>
+                    <button 
+                      type='button'
+                      id='listCancel'
+                      onClick={() => {this.setState({isModalOpen:false})}}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type='button'
+                      id='listDelete'
+                      onClick={this.deleteList}
+                    >
+                      Delete
+                    </button>
+              </div>
+            </div>
+          ):null
+        }
       </div>
     );
   }

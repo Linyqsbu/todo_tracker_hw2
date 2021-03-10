@@ -103,14 +103,14 @@ class ToDoItem extends Component {
 
                 {!this.state.statusEditable?
                     <div 
-                        className='item-col status-col' 
-                        className={statusType}
+                        className={`item-col status-col ${statusType}`}
                         onClick={() => {this.setState({statusEditable:true})}}
                     >
                         {listItem.status}
                     </div>:
                     <select
                         defaultValue={listItem.status}
+                        className='item-col status-col'
                         onBlur={(e) => this.submitStatus(e)}
                         autoFocus
                     >
@@ -118,8 +118,6 @@ class ToDoItem extends Component {
                         <option value="incomplete">incomplete</option>
                     </select>
                 }
-
-                <div className='item-col test-4-col'></div>
                 <div className='item-col list-controls-col'>
                     <KeyboardArrowUp 
                         className='list-item-control todo-button' 

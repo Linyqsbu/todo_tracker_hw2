@@ -96,7 +96,11 @@
 }
 
 #add-list-button {
+    cursor:pointer;
     color: var(--swatch-accent);
+}
+#add-list-button:hover{
+    background-color:var(--swatch-contrast);
 }
 
 .status-incomplete {
@@ -109,4 +113,17 @@
 
 #add-item-button, #delete-list-button, #close-list-button {
     text-align: center;
+}
+
+.modal{
+    background-color:rgba(0,0,0,0.4);
+}
+
+#listDelete{
+    background-color:#f44336;
+}
+
+#listCancel{
+    background-color:#ccc;
+    color:black
 }
