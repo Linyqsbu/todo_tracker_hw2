@@ -25,7 +25,11 @@ class Workspace extends Component {
     }
 
     render() {
+        let buttonType='todo-button';
+        if(this.props.isButtonDisable)
+            buttonType='deactivated-button';
         return (
+            
             <div id="workspace">
                 <div id="todo-list-header-card" className="list-item-card">
                     <div id="task-col-header" className="item-col todo-button">Task</div>
@@ -35,18 +39,18 @@ class Workspace extends Component {
 
                         <AddBox 
                             id="add-item-button" 
-                            className="list-item-control material-icons todo-button"
+                            className={`list-item-control material-icons ${buttonType}`}
                             onClick={this.handleAddItem}
                         />
 
                         <Delete 
                             id="delete-list-button" 
-                            className="list-item-control material-icons todo-button" 
+                            className={`list-item-control material-icons ${buttonType}`}
                             onClick={this.handleDeleteList}
                         />
                         <Close 
                             id="close-list-button" 
-                            className="list-item-control material-icons todo-button" 
+                            className={`list-item-control material-icons ${buttonType}`}
                             onClick={this.handleCloseList}
                         />
                     </div>

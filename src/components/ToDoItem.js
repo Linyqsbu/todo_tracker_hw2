@@ -68,7 +68,10 @@ class ToDoItem extends Component {
         let statusType = "status-complete";
         if (listItem.status === "incomplete")
             statusType = "status-incomplete";
-
+        
+        let deactivated=''
+        if(this.props.isButtonDisable)
+            deactivated='deactivated-button';
         return (
             <div id={'todo-list-item-' + listItem.id} className='list-item-card'>
 
@@ -103,7 +106,7 @@ class ToDoItem extends Component {
 
                 {!this.state.statusEditable?
                     <div 
-                        className={`item-col status-col ${statusType}`}
+                        className={`item-col status-col' ${statusType}`}
                         onClick={() => {this.setState({statusEditable:true})}}
                     >
                         {listItem.status}
@@ -120,15 +123,15 @@ class ToDoItem extends Component {
                 }
                 <div className='item-col list-controls-col'>
                     <KeyboardArrowUp 
-                        className='list-item-control todo-button' 
+                        className='list-item-control todo-button'
                         onClick={this.handleMoveItemUp}
                     />
                     <KeyboardArrowDown 
-                        className='list-item-control todo-button' 
+                        className='list-item-control todo-button'
                         onClick={this.handleMoveItemDown}
                     />
                     <Close 
-                        className='list-item-control todo-button' 
+                        className='list-item-control todo-button'
                         onClick={this.handleDeleteItem}
                     />
                     <div className='list-item-control'></div>

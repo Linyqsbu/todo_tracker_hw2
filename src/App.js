@@ -72,7 +72,7 @@ class App extends Component {
       testList.id !== toDoList.id
     );
     nextLists.unshift(toDoList);
-
+    this.tps.clearAllTransactions();
     this.setState({
       toDoLists: nextLists,
       currentList: toDoList,
@@ -89,22 +89,26 @@ class App extends Component {
   }
 
   addNewList = () => {
-    let newToDoListInList = [this.makeNewToDoList()];
-    let newToDoListsList = [...newToDoListInList, ...this.state.toDoLists];
-    let newToDoList = newToDoListInList[0];
+    if(!this.state.toDoLists.includes(this.state.currentList)){
+      let newToDoListInList = [this.makeNewToDoList()];
+      let newToDoListsList = [...newToDoListInList, ...this.state.toDoLists];
+      let newToDoList = newToDoListInList[0];
 
-    // AND SET THE STATE, WHICH SHOULD FORCE A render
-    this.setState({
-      toDoLists: newToDoListsList,
-      currentList: newToDoList,
-      nextListId: this.state.nextListId+1,
-      
-    }, this.afterToDoListsChangeComplete);
+      // AND SET THE STATE, WHICH SHOULD FORCE A render
+      this.setState({
+        toDoLists: newToDoListsList,
+        currentList: newToDoList,
+        nextListId: this.state.nextListId+1,
+        
+      }, this.afterToDoListsChangeComplete);
+    }
   }
 
   addItemTransaction = () => {
-    let transaction=new AddNewItem_Transaction(this);
-    this.tps.addTransaction(transaction);
+    if(this.state.toDoLists.includes(this.state.currentList)){
+      let transaction=new AddNewItem_Transaction(this);
+      this.tps.addTransaction(transaction);
+    }
   }
 
   addItem = () => {
@@ -320,6 +324,9 @@ class App extends Component {
       <div id="root">
         <Navbar />
         <LeftSidebar 
+          undoable={this.tps.hasTransactionToUndo()}
+          redoable={this.tps.hasTransactionToRedo()}
+          listAddible={!this.state.toDoLists.includes(this.state.currentList)}
           toDoLists={this.state.toDoLists}
           loadToDoListCallback={this.loadToDoList}
           addNewListCallback={this.addNewList}
@@ -331,6 +338,7 @@ class App extends Component {
           
         />
         <Workspace 
+          isButtonDisable={!this.state.toDoLists.includes(this.state.currentList)}
           toDoListItems={items} 
           editItemNameCallback={this.editItemNameTransaction}
           editDueDateCallback={this.editItemDueDateTransaction}

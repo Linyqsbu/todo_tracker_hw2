@@ -65,9 +65,11 @@
     border-bottom: dotted;
 }
 
+/*
 .list-item-control {
     cursor: pointer;
 }
+*/
 
 .list-item-card {
     border-bottom: solid;
@@ -96,11 +98,7 @@
 }
 
 #add-list-button {
-    cursor:pointer;
     color: var(--swatch-accent);
-}
-#add-list-button:hover{
-    background-color:var(--swatch-contrast);
 }
 
 .status-incomplete {
@@ -126,4 +124,11 @@
 #listCancel{
     background-color:#ccc;
     color:black
+}
+
+.deactivated-button{
+    color:gray!important;
+    text-align:center;
+    font-weight:bold;
+    background-color: var(--swatch-complement);
 }
