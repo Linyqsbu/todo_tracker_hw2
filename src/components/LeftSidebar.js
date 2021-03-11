@@ -21,6 +21,8 @@ class LeftSidebar extends Component {
         this.props.redoCallback();
     }
 
+    
+
     render() {
         let undoType="deactivated-button";
         if(this.props.undoable)

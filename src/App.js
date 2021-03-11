@@ -34,7 +34,7 @@ class App extends Component {
     console.log("recentLists: " + recentLists);
     if (!recentLists) {
       recentLists = JSON.stringify(testData.toDoLists);
-      localStorage.setItem("toDoLists", recentLists);
+      localStorage.setItem("recentLists", recentLists);
     }
     recentLists = JSON.parse(recentLists);
     
@@ -126,7 +126,7 @@ class App extends Component {
     this.setState({
       toDoLists:newLists,
       currentList:newList,
-      nextListItemId:this.state.nextListItemId+1
+      nextListItemId:this.state.nextListItemId+1,
     },this.afterToDoListsChangeComplete);
     return newItem[0];
   }
@@ -180,24 +180,57 @@ class App extends Component {
     let transaction = new TaskEdit_Transaction(this, oldName, newName, item);
     this.tps.addTransaction(transaction);
   }
+
   editItemName = (item, newName) => {
-    item.description=newName;
+    let newItemSet=this.state.currentList.items.map(testItem => {
+      if(testItem.id==item.id){
+        testItem.description=newName;
+      }
+      return testItem;
+    });
+    
+    let newList={
+      name:this.state.currentList.name,
+      id:this.state.currentList.id,
+      items:newItemSet
+    };
+
+    let newLists=this.state.toDoLists.slice(1);
+    newLists.unshift(newList);
     this.setState({
-      currentList:this.state.currentList
+      currentList:newList,
+      toDoLists:newLists,
     },this.afterToDoListsChangeComplete);
   }
 
   editItemDueDateTransaction = (oldDate, newDate, item) => {
     let transaction = new DueDateEdit_Transaction(this, oldDate, newDate, item);
     this.tps.addTransaction(transaction);
+    this.setState({
+      undoable:this.tps.hasTransactionToUndo(),
+      redoable:this.tps.hasTransactionToRedo()
+    });
   }
 
   editItemDueDate = (item, newDueDate) => {
-    console.log(item);
-    item.due_date=newDueDate;
+    let newItemSet=this.state.currentList.items.map(testItem => {
+      if(testItem.id==item.id){
+        testItem.due_date=newDueDate;
+      }
+      return testItem;
+    });
+    let newList={
+      id:this.state.currentList.id,
+      name:this.state.currentList.name,
+      items:newItemSet
+    }
+
+    let newLists=this.state.toDoLists.slice(1);
+    newLists.unshift(newList)
     this.setState({
-      currentList:this.state.currentList
-    }, this.afterToDoListsChangeComplete)
+      currentList:newList,
+      toDoLists:newLists,
+    }, this.afterToDoListsChangeComplete);
   }
   
   editStatusTransaction = (oldStatus, newStatus, item) => {
@@ -205,10 +238,24 @@ class App extends Component {
     this.tps.addTransaction(transaction);
   }
   editStatus = (item, newStatus) => {
-    item.status=newStatus;
+    let newItemSet=this.state.currentList.items.map(testItem => {
+      if(testItem.id==item.id){
+        testItem.status=newStatus;
+      }
+      return testItem;
+    });
+    let newList={
+      id:this.state.currentList.id,
+      name:this.state.currentList.name,
+      items:newItemSet
+    }
+
+    let newLists = this.state.toDoLists.slice(1);
+    newLists.unshift(newList);
     this.setState({
-      currentList:this.state.currentList
-    }, this.afterToDoListsChangeComplete)
+      currentList:newList,
+      toDoLists:newLists,
+    }, this.afterToDoListsChangeComplete);
   }
 
   moveItemUpTransaction = (item) => {
@@ -229,7 +276,7 @@ class App extends Component {
       newLists.unshift(newList);
       this.setState({
         currentList:newList,
-        toDoLists:newLists
+        toDoLists:newLists,
       }, this.afterToDoListsChangeComplete)
     }
   }
@@ -253,7 +300,7 @@ class App extends Component {
       newLists.unshift(newList);
       this.setState({
         currentList:newList,
-        toDoLists:newLists
+        toDoLists:newLists,
       }, this.afterToDoListsChangeComplete);
     }
   }
@@ -274,7 +321,7 @@ class App extends Component {
     newLists.unshift(newList);
     this.setState({
       currentList:newList,
-      toDoLists:newLists
+      toDoLists:newLists,
     }, this.afterToDoListsChangeComplete);
   }
 
@@ -294,8 +341,27 @@ class App extends Component {
     newLists.unshift(newList);
     this.setState({
       toDoList:newLists,
-      currentList:newList
+      currentList:newList,
     }, this.afterToDoListsChangeComplete);
+  }
+
+  handleKeyDown = (event) => {
+    
+    if(event.keyCode===90){
+      this.undo();
+    }
+
+    else if(event.keyCode===89){
+      this.redo();
+    }
+  }
+
+  componentDidMount = () => {
+    document.addEventListener("keydown", this.handleKeyDown.bind(this));
+  }
+
+  componentWillUnmount = () => {
+    document.removeEventListener("keydown", this.handleKeyDown.bind(this));
   }
 
   redo = () => {
@@ -321,6 +387,7 @@ class App extends Component {
   }
 
   render() {
+    
     let items = this.state.currentList.items;
     return (
       <div id="root">

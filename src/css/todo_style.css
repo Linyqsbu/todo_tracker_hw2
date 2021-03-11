@@ -132,3 +132,7 @@
     font-weight:bold;
     background-color: var(--swatch-complement);
 }
+
+#todo-list-items-div .list-item-card:hover{
+    background-color:lightslategray;
+}
