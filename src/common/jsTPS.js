@@ -165,8 +165,8 @@ export default class jsTPS {
             this.performingDo = true;
             let transaction = this.transactions[this.mostRecentTransaction+1];
             this.mostRecentTransaction++;
-            this.performingDo = false;
             transaction.doTransaction();
+            this.performingDo = false;
             
         }
     }
@@ -180,8 +180,8 @@ export default class jsTPS {
             this.performingUndo = true;
             let transaction = this.transactions[this.mostRecentTransaction];
             this.mostRecentTransaction--;
-            this.performingUndo = false;
             transaction.undoTransaction();
+            this.performingUndo = false;
             
         }
     }

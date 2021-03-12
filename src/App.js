@@ -30,7 +30,7 @@ class App extends Component {
     this.tps = new jsTPS();
 
     // CHECK TO SEE IF THERE IS DATA IN LOCAL STORAGE FOR THIS APP
-    let recentLists = localStorage.getItem("recentList");
+    let recentLists = localStorage.getItem("recentLists");
     console.log("recentLists: " + recentLists);
     if (!recentLists) {
       recentLists = JSON.stringify(testData.toDoLists);
@@ -335,12 +335,12 @@ class App extends Component {
       id:this.state.currentList.id,
       name:this.state.currentList.name,
       items:newItems
-    }
+    };
 
     let newLists=this.state.toDoLists.slice(1);
     newLists.unshift(newList);
     this.setState({
-      toDoList:newLists,
+      toDoLists:newLists,
       currentList:newList,
     }, this.afterToDoListsChangeComplete);
   }
